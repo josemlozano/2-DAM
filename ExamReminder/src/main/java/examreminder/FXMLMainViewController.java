@@ -90,6 +90,12 @@ public class FXMLMainViewController implements Initializable {
         options = new String[]{"Show all exams", "Show exams from currently selected subject", "Show exams average"};
         
         initializeFilters();
+        
+        date.setEditable(false);
+        
+        date.getEditor().setOnMouseClicked(e -> {
+            date.show();
+        });
     }
 
     /**
@@ -236,14 +242,7 @@ public class FXMLMainViewController implements Initializable {
         }
 
         stage.setOnCloseRequest(event -> {
-            Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
-            dialog.setTitle("Confirm");
-            Optional<ButtonType> result = dialog.showAndWait();
-            if (result.get() != ButtonType.OK) {
-                event.consume();
-            } else {
-                FileUtils.saveExams(list);
-            }
+            FileUtils.saveExams(list);
         });
     }
 

@@ -19,5 +19,16 @@
       </group>
     </open-files>
     <editor-bookmarks lastBookmarkId="0" xmlns="http://www.netbeans.org/ns/editor-bookmarks/2"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+      <group>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/build.gradle</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/FXMLMainViewController.java</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/FXMLLoginViewController.java</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/utils/MessageUtils.java</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/utils/FileUtils.java</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/model/Exam.java</file>
+        <file>file:/C:/Users/josik/Documents/SourceTree/2-DAM/ExamReminder/src/main/java/examreminder/ExamReminder.java</file>
+      </group>
+    </open-files>
   </auxiliary>
 </gradle-project-properties>
