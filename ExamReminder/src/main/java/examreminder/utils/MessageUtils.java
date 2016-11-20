@@ -1,6 +1,7 @@
 package examreminder.utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  *
@@ -16,6 +17,11 @@ public class MessageUtils {
     }
     
     public static void showMessage (String message) {
-        
+        String[] messages = message.split(" ## ");
+        Alert dialog = new Alert(AlertType.INFORMATION);
+        dialog.setTitle("Alert Dialog");
+        dialog.setHeaderText(messages[0]);
+        dialog.setContentText(messages[1]);
+        dialog.showAndWait();
     }
 }

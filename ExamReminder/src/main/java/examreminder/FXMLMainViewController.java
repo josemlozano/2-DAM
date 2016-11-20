@@ -7,19 +7,24 @@ package examreminder;
 
 import examreminder.model.Exam;
 import examreminder.utils.FileUtils;
+import examreminder.utils.MessageUtils;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -27,6 +32,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -34,6 +40,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
  * @author josik
  */
 public class FXMLMainViewController implements Initializable {
+
+    private Stage stage = null;
 
     @FXML
     private TableView<Exam> table;
@@ -56,50 +64,53 @@ public class FXMLMainViewController implements Initializable {
     @FXML
     private Button delete;
     @FXML
-    private ComboBox<?> comboFilter;
-    @FXML
     private Button applyFilter;
-    
+    @FXML
+    private ChoiceBox<String> cbFilter;
+
     private List<Exam> list;
+    ObservableList<Exam> obsList;
+    ObservableList<String> listFilter;
+    private String[] options;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        update.setDisable(true);
+        delete.setDisable(true);
+
         list = FileUtils.loadExams();
         initializeTable();
-        ObservableList<Exam> obsList = FXCollections.observableList(list);
-        
-        
-        
+        obsList = FXCollections.observableList(list);
+
         table.setItems(obsList);
+        options = new String[]{"Show all exams", "Show exams from currently selected subject", "Show exams average"};
         
-//        for (int i = 0; i < list.size(); i++) {
-//            tableSub.setText(list.get(i).getSubject());
-//            tableDate.setText(list.get(i).getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-//            if (list.get(i).getMark() != -1) {
-//                tableMark.setText("" + list.get(i).getMark());
-//            }
-//        }
+        initializeFilters();
     }
-    
-    public void initializeTable(){
+
+    /**
+     * Initializes the table of subjects of the program
+     */
+    public void initializeTable() {
         table.setPlaceholder(new Label("No products in this category"));
-        
+
         tableSub.setCellValueFactory(new PropertyValueFactory<>("subject"));
         tableDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableMark.setCellValueFactory(new PropertyValueFactory<>("mark"));
-        tableDate.setStyle( "-fx-alignment: CENTER;");
-        tableMark.setStyle( "-fx-alignment: CENTER-RIGHT;");
-        
-        tableMark.setCellFactory(col -> {  // How to show the price column's value
+        tableDate.setStyle("-fx-alignment: CENTER;");
+        tableMark.setStyle("-fx-alignment: CENTER-RIGHT;");
+
+        tableMark.setCellFactory(col -> {
             return new TableCell<Exam, Float>() {
-                //@Override
+                @Override
                 protected void updateItem(Float mark, boolean empty) {
-                    //super.updateItem(price, empty);
-                    
-                    if (mark == null || empty) {
+                    super.updateItem(mark, empty);
+
+                    if (mark == null || empty || mark == -1) {
                         setText(null);
                     } else {
                         setText(String.format("%.2f", mark));
@@ -107,24 +118,164 @@ public class FXMLMainViewController implements Initializable {
                 }
             };
         });
-        
+
         // A product is selected from the table
-//        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-//            if (newSelection != null) {
-//                productFieldsContainer.setVisible(true);
-//                categoryChoice.getSelectionModel().select(
-//                        categoryList.getSelectionModel().selectedIndexProperty().intValue());
-//                referenceInput.setText(newSelection.getReference());
-//                nameInput.setText(newSelection.getName());
-//                priceInput.setText(String.format("%.2f", newSelection.getPrice()));
-//                saveProductBt.setDisable(false);
-//                deleteProductBt.setDisable(false);
-//            } else {
-//                productFieldsContainer.setVisible(false);
-//                saveProductBt.setDisable(true);
-//                deleteProductBt.setDisable(true);
-//            }
-//        });
+        List<String> listOption = new ArrayList<>();
+        listOption.add("Show all exams");
+        listOption.add("Show exams from currently select subject");
+        listOption.add("Show exams average");
+        table.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                textFieldSubj.setText(newSelection.getSubject());
+                textFieldMark.setText(String.format("%.2f", newSelection.getMark()));
+                // split the date and rebuild with "/"
+                String[] d = newSelection.getDate().toString().split("-");
+                String d2 = d[2] + "/" + d[1] + "/" + d[0];
+                LocalDate localDate = LocalDate.parse(d2, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                date.setValue(localDate);
+                add.setDisable(true);
+                update.setDisable(false);
+                delete.setDisable(false);
+            } else {
+                add.setDisable(false);
+                update.setDisable(true);
+                delete.setDisable(true);
+            }
+        });
+    }
+
+    /**
+     * This function add a exam to table and the exams list
+     * @param event 
+     */
+    @FXML
+    private void addExam(ActionEvent event) {
+
+        Exam e = null;
+        try {
+            float markTemp = Float.parseFloat(textFieldMark.getText());
+            e = new Exam(textFieldSubj.getText(), date.getValue(), markTemp);
+        } catch (Exception ex) {
+            e = new Exam(textFieldSubj.getText(), date.getValue());
+        }
+
+        list.add(e);
+
+        initializeTable();
+        obsList = FXCollections.observableList(list);
+
+        table.setItems(obsList);
+
+        textFieldSubj.clear();
+        textFieldMark.clear();
+        date.setValue(null);
+    }
+
+    /**
+     * Update a exam of exam table and the exams list
+     * @param event 
+     */
+    @FXML
+    private void updateExam(ActionEvent event) {
+        int index = table.getSelectionModel().getSelectedIndex();
+        Exam e = null;
+        try {
+            float markTemp = Float.parseFloat(textFieldMark.getText());
+            e = new Exam(textFieldSubj.getText(), date.getValue(), markTemp);
+        } catch (Exception ex) {
+            e = new Exam(textFieldSubj.getText(), date.getValue());
+        }
+        list.set(index, e);
+
+        initializeTable();
+        obsList = FXCollections.observableList(list);
+
+        table.setItems(obsList);
+
+        textFieldSubj.clear();
+        textFieldMark.clear();
+        date.setValue(null);
     }
     
+    /**
+     * Delete a exam of exam table and the exams list
+     * @param event 
+     */
+    @FXML
+    private void deleteExam(ActionEvent event) {
+        Exam selectedProd = table.getSelectionModel().getSelectedItem();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete product " + selectedProd.getSubject());
+
+        alert.setContentText("Are you ok with this?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            list.remove(selectedProd);
+            obsList.remove(selectedProd);
+            table.getSelectionModel().clearSelection();
+        }
+    }
+
+    /**
+     * This function picks up the close command and calls another function
+     * @param stage 
+     */
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        setOnWindowClose();
+    }
+
+    /**
+     * This function is the one in charge of saving the exams in the file
+     */
+    private void setOnWindowClose() {
+        if (stage == null) {
+            return;
+        }
+
+        stage.setOnCloseRequest(event -> {
+            Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
+            dialog.setTitle("Confirm");
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.get() != ButtonType.OK) {
+                event.consume();
+            } else {
+                FileUtils.saveExams(list);
+            }
+        });
+    }
+
+    /**
+     * Initialize filters to choice box
+     */
+    private void initializeFilters() {
+        listFilter = FXCollections.observableArrayList(options);
+        cbFilter.setItems(listFilter);
+    }
+
+    /**
+     * When you click Apply Filter this function captures the filter and applies it.
+     * @param event 
+     */
+    @FXML
+    private void applyFilterExam(ActionEvent event) {
+        // "Show exams from currently selected subject"
+        if (cbFilter.getValue().equals(options[1])) {
+            obsList = FXCollections.observableArrayList(
+                    list.stream().filter(p -> p.getSubject().equals(
+                            textFieldSubj.getText())).collect(Collectors.toList()));
+
+            table.setItems(obsList);
+        } //"Show exams average" 
+        else if (cbFilter.getValue().equals(options[2])) {
+            Double average = list.stream().filter(p -> p.getMark() > 0)
+                    .mapToDouble(Exam::getMark).average().getAsDouble();
+            MessageUtils.showMessage("Exams average ## The average of selected exams is " + average);
+        } // show all exams
+        else {
+            initialize(null, null);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -30,12 +30,12 @@
             <DatePicker fx:id="date" layoutX="48.0" layoutY="54.0" prefHeight="25.0" prefWidth="237.0" />
             <Text layoutX="309.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mark:" />
             <TextField fx:id="textFieldMark" layoutX="347.0" layoutY="54.0" prefHeight="25.0" prefWidth="237.0" AnchorPane.rightAnchor="15.0" />
-            <Button fx:id="add" layoutX="24.0" layoutY="98.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="172.0" text="Add" AnchorPane.leftAnchor="10.0" />
-            <Button fx:id="update" layoutX="213.0" layoutY="98.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="172.0" text="Update" />
-            <Button fx:id="delete" layoutX="407.0" layoutY="98.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="172.0" text="Delete" AnchorPane.rightAnchor="15.0" />
+            <Button fx:id="add" layoutX="24.0" layoutY="98.0" mnemonicParsing="false" onAction="#addExam" prefHeight="25.0" prefWidth="172.0" text="Add" AnchorPane.leftAnchor="10.0" />
+            <Button fx:id="update" alignment="CENTER" layoutX="213.0" layoutY="98.0" mnemonicParsing="false" onAction="#updateExam" prefHeight="25.0" prefWidth="172.0" text="Update" />
+            <Button fx:id="delete" layoutX="407.0" layoutY="98.0" mnemonicParsing="false" onAction="#deleteExam" prefHeight="25.0" prefWidth="172.0" text="Delete" AnchorPane.rightAnchor="15.0" />
             <Text layoutX="35.0" layoutY="162.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filter:" AnchorPane.leftAnchor="10.0" />
-            <ComboBox fx:id="comboFilter" layoutX="46.0" layoutY="145.0" prefHeight="25.0" prefWidth="338.0" />
-            <Button fx:id="applyFilter" layoutX="309.0" layoutY="145.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="172.0" text="Apply Filter" AnchorPane.rightAnchor="15.0" />
+            <ChoiceBox fx:id="cbFilter" layoutX="48.0" layoutY="145.0" prefHeight="25.0" prefWidth="339.0" />
+            <Button fx:id="applyFilter" layoutX="309.0" layoutY="145.0" mnemonicParsing="false" onAction="#applyFilterExam" prefHeight="25.0" prefWidth="172.0" text="Apply Filter" AnchorPane.rightAnchor="15.0" />
          </children></AnchorPane>
   </items>
 </SplitPane>

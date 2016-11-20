@@ -52,15 +52,22 @@ public class FXMLLoginViewController implements Initializable {
         String textPass = org.apache.commons.codec.digest.DigestUtils.
                 sha256Hex(passwordFieldPass.getText());
         if (FileUtils.read(textLogin, textPass)) {
-            Parent view1 = FXMLLoader.load(
-                    FXMLMainViewController.class.getResource("/fxml/FXMLMainView.fxml"));
-            Scene view1Scene = new Scene(view1);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/FXMLMainView.fxml"));
+            loader.load();
+            Parent root = loader.getRoot();
+
+            Scene view1Scene = new Scene(root);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            FXMLMainViewController controller = loader.getController();
+            controller.setStage(stage);
+
+
             stage.hide();
             stage.setScene(view1Scene);
             stage.show();
-        } 
-        else {
+        } else {
             MessageUtils.showError(textPass);
         }
     }
