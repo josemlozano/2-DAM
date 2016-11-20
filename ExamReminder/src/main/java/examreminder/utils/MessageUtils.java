@@ -8,6 +8,11 @@ import javafx.scene.control.Alert.AlertType;
  * @author Jose Muñoz
  */
 public class MessageUtils {
+    
+    /**
+     * Show error message
+     * @param message 
+     */
     public static void showError (String message){
         Alert dialog = new Alert(Alert.AlertType.ERROR);
             dialog.setTitle("Error");
@@ -16,6 +21,10 @@ public class MessageUtils {
             dialog.showAndWait();
     }
     
+    /**
+     * Show any other message
+     * @param message 
+     */
     public static void showMessage (String message) {
         String[] messages = message.split(" ## ");
         Alert dialog = new Alert(AlertType.INFORMATION);

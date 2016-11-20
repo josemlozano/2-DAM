@@ -24,7 +24,10 @@ public class FileUtils {
     private static final String EXAMS = "exams.txt";
     private static final String PASSWORD = "password.txt";
     
-    
+    /**
+     * Load exams of a file
+     * @return listExam
+     */
     public static List<Exam> loadExams() {
         List<Exam> listExam = new ArrayList<>();
         
@@ -56,6 +59,10 @@ public class FileUtils {
         return listExam;
     }
     
+    /**
+     * Save exams in its file
+     * @param exams 
+     */
     public static void saveExams (List<Exam> exams) {
         try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(EXAMS)))){
             exams.stream().forEach(p -> {
@@ -73,6 +80,13 @@ public class FileUtils {
         }
     }
     
+    /**
+     * Verify that the user and password are correct
+     * @param login
+     * @param pass
+     * @return true if the user and password are correct, and false if user and
+     * password aren't correct
+     */
     public static boolean read(String login, String pass) {
         try (BufferedReader reader = new BufferedReader(
                 new FileReader(new File(PASSWORD)))) {
